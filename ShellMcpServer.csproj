@@ -5,8 +5,8 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <AssemblyName>BashMcpServer</AssemblyName>
-    <RootNamespace>BashMcpServer</RootNamespace>
+    <AssemblyName>ShellMcpServer</AssemblyName>
+    <RootNamespace>ShellMcpServer</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
