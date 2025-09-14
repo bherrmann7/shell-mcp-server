@@ -4,7 +4,7 @@ A Model Context Protocol (MCP) server that provides secure cross-platform shell 
 
 ## Overview
 
-This server exposes a single tool that allows MCP clients to execute shell commands safely with built-in security measures and timeout protection. Uses bash on Unix/Linux/macOS and cmd.exe on Windows.
+This server exposes a single tool that allows MCP clients to execute shell commands safely with built-in security measures and timeout protection. Automatically uses the appropriate shell for each platform: bash on Unix/Linux/macOS and cmd.exe on Windows.
 
 ## Features
 
@@ -37,7 +37,7 @@ The server provides one MCP tool:
 
 ### ExecuteShellCommand
 
-Executes a shell command and returns structured results. Uses the appropriate shell for the platform (bash on Unix, cmd.exe on Windows).
+Executes a shell command and returns structured results. Automatically uses the appropriate shell for the platform (bash on Unix/Linux/macOS, cmd.exe on Windows).
 
 **Parameters:**
 - `command` (string): The shell command to execute
