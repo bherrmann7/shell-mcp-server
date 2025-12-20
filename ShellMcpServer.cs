@@ -20,8 +20,12 @@ builder.Build().Run();
 [McpServerToolType]
 public static class ShellCommandTool
 {
-    [McpServerTool, Description("Execute a shell command and return the result. Uses bash on Unix/Linux/macOS and cmd.exe on Windows.")]
-    public static ShellCommandResult ExecuteShellCommand(string command)
+    [McpServerTool, Description("Execute a shell command and return the result on the user's local machine. Uses bash on Unix/Linux/macOS and cmd.exe on Windows.")]
+    public static ShellCommandResult ExecuteShellCommand(
+        string command,
+        string? workingDirectory = null,
+        int timeoutSeconds = 30,
+        Dictionary<string, string>? environmentVariables = null)
     {
         try
         {
@@ -32,6 +36,28 @@ public static class ShellCommandTool
                 {
                     Success = false,
                     Error = "Command cannot be empty",
+                    ExitCode = -1
+                };
+            }
+
+            // Validate working directory if provided
+            if (!string.IsNullOrEmpty(workingDirectory) && !Directory.Exists(workingDirectory))
+            {
+                return new ShellCommandResult
+                {
+                    Success = false,
+                    Error = $"Working directory does not exist: {workingDirectory}",
+                    ExitCode = -1
+                };
+            }
+
+            // Validate timeout
+            if (timeoutSeconds <= 0)
+            {
+                return new ShellCommandResult
+                {
+                    Success = false,
+                    Error = "Timeout must be greater than 0",
                     ExitCode = -1
                 };
             }
@@ -58,10 +84,25 @@ public static class ShellCommandTool
                     processStartInfo.Arguments = tempScript;
                 }
                 
+                // Set working directory if provided
+                if (!string.IsNullOrEmpty(workingDirectory))
+                {
+                    processStartInfo.WorkingDirectory = workingDirectory;
+                }
+                
                 processStartInfo.RedirectStandardOutput = true;
                 processStartInfo.RedirectStandardError = true;
                 processStartInfo.UseShellExecute = false;
                 processStartInfo.CreateNoWindow = true;
+
+                // Add environment variables if provided
+                if (environmentVariables != null)
+                {
+                    foreach (var kvp in environmentVariables)
+                    {
+                        processStartInfo.Environment[kvp.Key] = kvp.Value;
+                    }
+                }
 
                 using var process = new Process { StartInfo = processStartInfo };
                 
@@ -81,14 +122,15 @@ public static class ShellCommandTool
                 process.BeginOutputReadLine();
                 process.BeginErrorReadLine();
                 
-                // Add timeout to prevent hanging
-                if (!process.WaitForExit(30000)) // 30 second timeout
+                // Add configurable timeout to prevent hanging
+                int timeoutMs = timeoutSeconds * 1000;
+                if (!process.WaitForExit(timeoutMs))
                 {
                     process.Kill();
                     return new ShellCommandResult
                     {
                         Success = false,
-                        Error = "Command timed out after 30 seconds",
+                        Error = $"Command timed out after {timeoutSeconds} seconds",
                         ExitCode = -1
                     };
                 }
