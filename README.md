@@ -12,12 +12,12 @@ This server exposes a single tool that allows MCP clients to execute shell comma
 - **Secure Command Execution**: Commands are executed safely with platform-appropriate shells
 - **Timeout Protection**: 30-second timeout prevents hanging processes
 - **Structured Response**: Returns success status, output, error messages, and exit codes
-- **Built on .NET 9.0**: For broad compatibility across platforms
+- **Built on .NET 10.0**: For broad compatibility across platforms
 
 ## Installation
 
 ### Prerequisites
-- .NET 9.0 SDK
+- .NET 10.0 SDK
 - Windows: cmd.exe (built-in)
 - macOS/Linux: bash shell (typically pre-installed)
 
@@ -58,7 +58,7 @@ Executes a shell command and returns structured results. Automatically uses the 
 
 ## Technical Details
 
-- Built with ModelContextProtocol library v0.3.0-preview.4
+- Built with ModelContextProtocol library v0.8.0-preview.1
 - Uses stdio transport for MCP communication
 - Redirects stdout to stderr to maintain MCP protocol compliance
 - Platform detection using RuntimeInformation
