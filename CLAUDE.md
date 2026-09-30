@@ -33,4 +33,4 @@ Everything is in `ShellMcpServer.cs`: top-level statements that build the host, 
 ## Repo conventions
 
 - Commit and push directly to `main`; no feature branches or PRs.
-- `README.md` is out of date: it lists SDK 0.8.0-preview.1 and only the `command` parameter. The tool also takes `workingDirectory`, `timeoutSeconds` (default 30) and `environmentVariables`.
+- `README.md` documents the tool's parameters and behavior; update it when those change.
