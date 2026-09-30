@@ -89,7 +89,7 @@ public class ShellCommandToolTests
 
         Assert.False(result.Success);
         Assert.Equal(-1, result.ExitCode);
-        Assert.Contains("Timeout must be greater than 0", result.Error);
+        Assert.Contains("Timeout must be between", result.Error);
     }
 
     [Fact]
@@ -116,5 +116,39 @@ public class ShellCommandToolTests
         Assert.False(result.Success);
         Assert.Equal(-1, result.ExitCode);
         Assert.Contains("timed out", result.Error, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void TooLargeTimeout_ReturnsError()
+    {
+        var result = ShellCommandTool.ExecuteShellCommand("echo hi", timeoutSeconds: int.MaxValue);
+
+        Assert.False(result.Success);
+        Assert.Equal(-1, result.ExitCode);
+        Assert.Contains("Timeout must be between", result.Error);
+    }
+
+    [Fact]
+    public void CommandReadingStdin_GetsEofInsteadOfHanging()
+    {
+        var command = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+            ? "more"
+            : "cat";
+        var result = ShellCommandTool.ExecuteShellCommand(command, timeoutSeconds: 5);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Equal("", result.Output);
+    }
+
+    [Fact]
+    public void LargeOutput_IsNotTruncated()
+    {
+        var command = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+            ? "for /L %i in (1,1,20000) do @echo %i"
+            : "seq 1 20000";
+        var result = ShellCommandTool.ExecuteShellCommand(command, timeoutSeconds: 60);
+
+        Assert.True(result.Success, result.Error);
+        Assert.EndsWith("20000", result.Output);
     }
 }
