@@ -17,7 +17,9 @@ dotnet test ShellMcpServer.Tests --filter "FullyQualifiedName~Timeout_KillsLongR
 
 There is no .sln. The test project lives inside the server's folder, so `ShellMcpServer.csproj` excludes `ShellMcpServer.Tests/**` from compilation. Keep that exclusion when touching the csproj. `Directory.Build.props` is intentionally empty to stop MSBuild importing props from parent directories.
 
-CI (`.github/workflows/build.yml`) builds and tests on ubuntu, windows and macos, then publishes self-contained single-file binaries per platform. Tests must pass on all three, so each test picks a Windows or Unix command via `RuntimeInformation`.
+Because there is no .sln, a bare `dotnet test` at the repo root targets only `ShellMcpServer.csproj` and runs zero tests without reporting an error. Always pass `ShellMcpServer.Tests`. The tests use xUnit v2 on VSTest, so the `--filter "FullyQualifiedName~…"` syntax applies here, not the xUnit v3 / Microsoft Testing Platform `--filter-method` options described in the parent `~/prj/CLAUDE.md`.
+
+CI (`.github/workflows/build.yml`) runs on ubuntu, windows and macos, then publishes self-contained single-file binaries per platform. Its Test step is a bare `dotnet test`, so **CI does not currently run the tests**. Tests are still written to pass on all three platforms: each one picks a Windows or Unix command via `RuntimeInformation`.
 
 ## Architecture
 
